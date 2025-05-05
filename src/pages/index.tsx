@@ -1,115 +1,272 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import PublicLayout from "@/Layouts/PublicLayout";
+import { IoBookmarkOutline } from "react-icons/io5";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import React from "react";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export default function Home() {
+const index = () => {
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <PublicLayout>
+      <div className="main-container ">
+        <h1 className="text-[42px] tracking-tighter font-[400]">
+          NEW ITEMS <span className="text-[42px] font-[200]">OF THIS SEASON</span>
+        </h1>
+        <div className="flex overflow-x-auto overflow-hidden gap-4 mt-6  ">
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%]  m-auto  rounded-sm overflow-hidden relative">
+              <img
+                src="/Images/HomePageImg/img1.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              The Edge of Tomorrow
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Action, <span>Triler</span>
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%] m-auto  rounded-sm overflow-hidden relative">
+              <img
+                src="/Images/HomePageImg/img2.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              Benched
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Comedy
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%] m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img3.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              Green Hell
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Romance, <span>Drama</span>
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%]  m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img4.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              Survival Spliton
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Comedy, <span>Drama</span>
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh]  rounded-lg pb-3 group">
+            <div className="w-[100%] x m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img5.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              The Chebod
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Drama
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%] m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img3.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              Green Hell
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Romance, <span>Drama</span>
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh] rounded-lg pb-3 group">
+            <div className="w-[100%]  m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img4.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              Survival Spliton
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Comedy, <span>Drama</span>
+            </p>
+          </div>
+          <div className="w-[15vw] min-h-[45vh]  rounded-lg pb-3 group">
+            <div className="w-[100%] x m-auto  rounded-sm overflow-hidden relative ">
+              <img
+                src="/Images/HomePageImg/img5.jpg"
+                alt=""
+                loading="lazy"
+                className="w-[100%] h-[100%]"
+              />
+              <p
+                className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10  scale-100 transition-all duration-300 
+                  flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer"
+              >
+                7.8
+              </p>
+
+              <p
+                className="w-10 h-10 rounded-sm  bg-black absolute top-4 right-5 z-10 opacity-0 scale-100 transition-all duration-300 
+                  group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold"
+              >
+                <IoBookmarkOutline className="text-2xl cursor-pointer" />
+              </p>
+            </div>
+            <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer group-hover:transition-all duration-300">
+              The Chebod
+            </p>
+            <p className="px-2 hover:cursor-pointer text-yellow-500 hover:underline text-[2.45vh]">
+              Drama
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+
+
+
+      <div className="main-container mt-16 pb-3">
+        <h1 className="font-medium text-4xl">Recently Update</h1>
+        <div className="menu flex gap-16 mt-6">
+          <p className="text-[2.45vh] pb-4 border-b-2 border-b-transparent hover:border-b-yellow-400 cursor-pointer hover:text-yellow-400 transition-all duration-200">
+            New Items
+          </p>
+          <p className="text-[2.45vh] pb-4 border-b-2 border-b-transparent hover:border-b-yellow-400 cursor-pointer hover:text-yellow-400 transition-all duration-200">
+            Movies
+          </p>
+          <p className="text-[2.45vh] pb-4 border-b-2 border-b-transparent hover:border-b-yellow-400 cursor-pointer hover:text-yellow-400 transition-all duration-200">
+            TV Shows
+          </p>
+          <p className="text-[2.45vh] pb-4 border-b-2 border-b-transparent hover:border-b-yellow-400 cursor-pointer hover:text-yellow-400 transition-all duration-200">
+            Anime
+          </p>
+        </div>
+      </div>
+    </PublicLayout>
   );
-}
+};
+
+export default index;
