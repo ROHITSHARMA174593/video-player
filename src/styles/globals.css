@@ -1,18 +1,26 @@
 @import "tailwindcss";
 
 
-html,
-body {
-  overflow-x: hidden;
+
+@layer components {
+  .main-container {
+    @apply max-w-[1200px] mx-auto px-3 sm:px-6 lg:px-6 2xl:px-12 pt-1 w-full;
+  }
 }
 
-@layer components{
-    .main-container{
-        @apply mx-auto px-3 sm:px-6 lg:px-6 2xl:px-12 pt-1;
-    }
-}
 
 
 /* globals.css me add karo */
 
+  /* Hide the scrollbar but keep the scroll functionality */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Enable horizontal scrolling for the container */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+    overflow-x: auto;
+  }
   
