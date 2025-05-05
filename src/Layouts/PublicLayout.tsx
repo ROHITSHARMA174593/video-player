@@ -87,9 +87,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           );
         })}
       </nav>
-    {/* <div className={`bg-red-200 border-2 border-black h-[calc(100vh-64px)] left-0 top-[12%] transition-all duration-300  ${isSidebarOpen ? "w-64" : "w-20"}`}>
-
-    </div> */}
+    
 
     </aside>
   );
@@ -174,8 +172,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             marginTop: "4rem",
           }}
         >
-          <div className={`flex border-2 border-green-400  min-h-screen ${isSidebarOpen ? "w-[22.5%]" : "w-[7%]"}`}></div>
-          <div className={`border-1 border-blue-500  ${isSidebarOpen ? "w-[77.5%]" : "w-[96%]"}`}>{children}</div>
+          <div className={`flex   min-h-screen ${isSidebarOpen ? "w-[22.5%]" : "w-[8%]"}`}></div>
+          <div className={`  ${isSidebarOpen ? "w-[77.5%]" : "w-[92%]"}`}>{children}</div>
         </main>
       </div>
     </div>
