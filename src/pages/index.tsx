@@ -248,7 +248,7 @@ const index = () => {
                     loading="lazy"
                     className="w-full h-full object-cover"
                   />
-                  <p className="w-10 h-10 rounded-full bg-transparent absolute top-4 left-5 z-10 flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer">
+                  <p className="w-10 h-10 rounded-full bg-transparent border-1 border-green-400 absolute top-4 left-5 z-10 flex items-center justify-center text-white text-[1.1rem] font-bold cursor-pointer">
                     {movie.rating}
                   </p>
                   <p className="w-10 h-10 rounded-sm bg-black absolute top-4 right-5 z-10 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[1.1rem] font-bold transition-all duration-300">
@@ -257,9 +257,9 @@ const index = () => {
 
                   {/* Play Button */}
                   <img
-                    src="/Images/HomePageImg/play.jpg"
+                    src="/Images/HomePageImg/play.png"
                     alt=""
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-10 w-12 h-12"
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-10 w-12 h-12 scale-50 group-hover:scale-100"
                   />
                 </div>
                 <p className="py-2 px-2 text-xl font-medium hover:text-yellow-500 group-hover:cursor-pointer transition-all duration-300">
