@@ -4,7 +4,7 @@
 
 @layer components {
   .main-container {
-    @apply max-w-[1200px] mx-auto px-3 sm:px-6 lg:px-6 2xl:px-12 pt-1 w-full;
+    @apply max-w-[1280px] mx-auto sm:px-6 lg:px-3 2xl:px-12 w-full;
   }
 }
 

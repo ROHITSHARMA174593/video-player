@@ -1,79 +1,128 @@
+// src/pages/api/hello.ts
 import { connectionString } from "@/lib/dbConnect";
-import Student from "@/lib/Student";
+import Student, { IStudent } from "@/lib/Student";
 import { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 
+// Interface for API response
+interface ApiResponse {
+  message: string;
+  success: boolean;
+  students?: IStudent[];
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ApiResponse>
 ) {
+  try {
+    console.log("MONGODB_URI:", process.env.MONGODB_URI);
+    if (mongoose.connections[0].readyState !== 1) {
+      console.log("Connecting to MongoDB...");
+      if (!connectionString) {
+        throw new Error("MONGODB_URI is not defined");
+      }
+      await mongoose.connect(connectionString, { connectTimeoutMS: 10000 });
+      console.log("MongoDB connected successfully");
+    }
+  } catch (error: any) {
+    console.error("MongoDB connection error:", error);
+    return res
+      .status(500)
+      .json({
+        message: `MongoDB connection failed: ${error.message}`,
+        success: false,
+      });
+  }
+
   if (req.method === "POST") {
     try {
-      const { name, class: studentClass, rollNo, phone } = req.body;
-
-      if (mongoose.connections[0].readyState !== 1) {
-        await mongoose.connect(connectionString ?? "");
+      const { videoURL } = req.body as { videoURL?: string };
+      if (!videoURL || typeof videoURL !== "string" || videoURL.trim() === "") {
+        return res
+          .status(400)
+          .json({ message: "Valid videoURL is required", success: false });
       }
 
-      const newStudent = new Student({
-        name,
-        class: studentClass,
-        rollNo,
-        phone,
-      });
-
+      const newStudent = new Student({ videoURL });
       await newStudent.save();
 
-      res
+      return res
         .status(200)
         .json({ message: "Student data uploaded successfully", success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading student data:", error);
-      res
+      return res
         .status(500)
-        .json({ message: "Error uploading student data", success: false });
+        .json({
+          message: `Error uploading student data: ${error.message}`,
+          success: false,
+        });
     }
   } else if (req.method === "GET") {
     try {
-      if (mongoose.connections[0].readyState !== 1) {
-        await mongoose.connect(connectionString ?? "");
-      }
-
-      const students = await Student.find(); //
-
-      res.status(200).json({ students });
-    } catch (error) {
+      const students: IStudent[] = await Student.find().exec();
+      // Convert Mongoose documents to plain objects for API response
+      const plainStudents = students.map((student) => ({
+        _id: student._id.toString(),
+        videoURL: student.videoURL,
+        __v: student.__v,
+      }));
+      return res
+        .status(200)
+        .json({
+          message: "Students fetched successfully",
+          success: true,
+          students: plainStudents,
+        });
+    } catch (error: any) {
       console.error("Error fetching student data:", error);
-      res
+      return res
         .status(500)
-        .json({ message: "Error fetching student data", success: false });
+        .json({
+          message: `Error fetching student data: ${error.message}`,
+          success: false,
+        });
     }
   } else if (req.method === "DELETE") {
     try {
-      const { id } = req.body;
-
-      if (!id) {
+      const { id } = req.body as { id?: string };
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return res
           .status(400)
-          .json({ message: "ID is required", success: false });
+          .json({ message: "Valid ID is required", success: false });
       }
 
-      if (mongoose.connections[0].readyState !== 1) {
-        await mongoose.connect(connectionString ?? "");
+      const result = await Student.findByIdAndDelete(id);
+      if (!result) {
+        return res
+          .status(404)
+          .json({ message: "Student not found", success: false });
       }
 
-      await Student.findByIdAndDelete(id);
-
-      res
+      return res
         .status(200)
         .json({ message: "Student deleted successfully", success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting student:", error);
-      res
+      return res
         .status(500)
-        .json({ message: "Error deleting student", success: false });
+        .json({
+          message: `Error deleting student: ${error.message}`,
+          success: false,
+        });
     }
   } else {
-    res.status(405).json({ message: "Method Not Allowed" });
+    return res
+      .status(405)
+      .json({ message: "Method Not Allowed", success: false });
   }
 }
+
+
+
+
+
+
+
+

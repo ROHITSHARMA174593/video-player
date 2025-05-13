@@ -3,7 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FiBell, FiMenu, FiHome, FiInfo } from "react-icons/fi";
+import { FiBell, FiMenu, FiHome } from "react-icons/fi";
+import { SiYoutubeshorts } from "react-icons/si";
+import { FaBookmark } from "react-icons/fa6";
+import { LiaDownloadSolid } from "react-icons/lia";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 type Notification = {
@@ -19,9 +22,17 @@ type PublicLayoutProps = {
 
 const navLinks = [
   { href: "/", label: "Home", icon: <FiHome className="text-xl" /> },
-  { href: "/about", label: "About", icon: <FiInfo className="text-xl" /> },
-  { href: "/shorts", label: "Shorts", icon: <FiBell className="text-xl" /> },
-  { href: "/trending", label: "Trending", icon: <FiBell className="text-xl" /> },
+  {
+    href: "/shorts",
+    label: "Shorts",
+    icon: <SiYoutubeshorts className="text-xl" />,
+  },
+  { href: "/saved", label: "Saved", icon: <FaBookmark className="text-xl" /> },
+  {
+    href: "/download",
+    label: "Download",
+    icon: <LiaDownloadSolid className="text-xl" />,
+  },
 ];
 
 const notifications: Notification[] = [
@@ -40,40 +51,46 @@ const notifications: Notification[] = [
 ];
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
 
+  const layoutStyle = {
+    paddingLeft: isSidebarOpen ? "16.5rem" : "6rem", // Adjust padding based on sidebar width
+    marginTop: "6rem",
+    zIndex: 10, // Ensure the content has higher z-index than sidebar
+  };
+
   const Navbar = () => (
     <aside
-      className={`rounded-tr-lg  bg-white shadow-md fixed top-[12%] left-0 h-[calc(100vh-64px)] transition-all duration-300 p-2 flex flex-col z-20 ${
-        isSidebarOpen ? "w-64" : "w-20"
+      className={`bg-white shadow-md fixed top-20 sm:top-20 left-0 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] transition-all duration-300 p-3 sm:p-4 flex flex-col z-20 ${
+        isSidebarOpen ? "w-48 sm:w-64" : "w-16 sm:w-20"
       }`}
     >
-      <div className="mb-6 flex flex-col items-center ">
-        <div className="flex justify-between items-center gap-20">
+      <div className="mb-4 sm:mb-6 flex flex-col items-center">
+        <div className="flex justify-between items-center w-full gap-4 sm:gap-6 lg:gap-8">
           <h1
-            className={`text-xl font-bold text-red-600 tracking-tight ${
+            className={`text-lg sm:text-2xl lg:text-2xl font-bold text-red-600 tracking-tight ${
               !isSidebarOpen && "hidden"
             }`}
           >
             YouStream
           </h1>
           <FiMenu
-            className="text-xl cursor-pointer p-0"
+            className={`text-lg sm:text-2xl lg:text-2xl cursor-pointer sm:block hidden`}
             onClick={() => setSidebarOpen(!isSidebarOpen)}
           />
         </div>
       </div>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2 sm:gap-3">
         {navLinks.map(({ href, label, icon }) => {
           const isActive = router.pathname === href;
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-4 py-2 px-3 rounded-lg transition-all ${
+              className={`flex items-center gap-3 sm:gap-4 py-2 px-2 sm:px-3 rounded-lg transition-all ${
                 isActive
                   ? "bg-red-100 text-red-600 font-semibold"
                   : "hover:bg-gray-100"
@@ -81,14 +98,14 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             >
               {icon}
               {isSidebarOpen && (
-                <span className="text-sm font-medium">{label}</span>
+                <span className="text-sm sm:text-base lg:text-lg font-medium">
+                  {label}
+                </span>
               )}
             </Link>
           );
         })}
       </nav>
-    
-
     </aside>
   );
 
@@ -98,8 +115,10 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     const userInitial = session?.user?.email?.[0].toUpperCase();
 
     return (
-      <header className="bg-white shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-30 h-16">
-        <h2 className="font-semibold text-lg">Public Layout</h2>
+      <header className="bg-white shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-30 h-20 md:h-16">
+        <h2 className="md:font-bold font-bold text-3xl md:text-2xl ">
+          Video Player
+        </h2>
         <div className="flex items-center gap-4 relative">
           <FiBell
             className="text-xl cursor-pointer"
@@ -153,27 +172,32 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col bg-gray-100 min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* ✅ Topbar Wrapper */}
       <div className="z-30" id="div-topbar">
         <Topbar notifications={notifications} />
       </div>
-  
+
       {/* ✅ Layout Wrapper */}
       <div className="flex  min-h-screen" id="div-layout-content">
         {/* Sidebar */}
         <Navbar />
-  
+
         {/* Main Content */}
-        <main
+        {/* <main
           className="transition-all duration-300 flex"
-          style={{
-            paddingLeft: isSidebarOpen ? "w-64" : "w-20",
-            marginTop: "4rem",
-          }}
+          style={layoutStyle}
         >
-          <div className={`flex   min-h-screen ${isSidebarOpen ? "w-[22.5%]" : "w-[8%]"}`}></div>
-          <div className={`  ${isSidebarOpen ? "w-[77.5%]" : "w-[92%]"}`}>{children}</div>
+          <div className={`flex   min-h-screen ${isSidebarOpen ? "w-[22.5%]" : "w-[2%]"}`}></div>
+          <div className={`  ${isSidebarOpen ? "w-[79.5%]" : "w-[98%]"}`}>{children}</div>
+        </main> */}
+
+        {/*! Main Content  */}
+        <main
+          className="transition-all duration-300 flex w-full"
+          style={layoutStyle}
+        >
+          {children}
         </main>
       </div>
     </div>
