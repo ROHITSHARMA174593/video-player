@@ -46,8 +46,7 @@ export default async function handler(
 
       const newStudent = new Student({ videoURL });
       await newStudent.save();
-
-      return res
+      return res 
         .status(200)
         .json({ message: "Student data uploaded successfully", success: true });
     } catch (error: any) {

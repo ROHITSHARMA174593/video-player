@@ -1,17 +1,3 @@
-// import mongoose from 'mongoose';
-
-// const studentSchema = new mongoose.Schema({
-//   videoURL: { type: String, required: true },
-// });
-
-// const Student = mongoose.models.Student || mongoose.model('Student', studentSchema);
-
-// export default Student;
-
-
-
-
-
 // src/lib/Student.ts
 import mongoose, { Schema, Model, Document } from 'mongoose';
 
