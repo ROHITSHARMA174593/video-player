@@ -1,0 +1,134 @@
+input 1 ke liye commands (mtlb project\myvideos\input1)
+
+For creating public\videos\input1\360(all the m3u8 and .ts files)
+360 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input1.mp4" -vf scale=640:360 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 23 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 365k -maxrate 400k -bufsize 600k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input1\360\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input1\360\playlist.m3u8"
+
+For creating public\videos\input1\480(all the m3u8 and .ts files)
+480 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input1.mp4" -vf scale=854:480 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 22 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 800k -maxrate 900k -bufsize 1200k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input1\480\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input1\480\playlist.m3u8"
+
+For creating public\videos\input1\720(all the m3u8 and .ts files)
+720 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input1.mp4" -vf scale=1280:720 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 21 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 1500k -maxrate 1800k -bufsize 2100k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input1\720\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input1\720\playlist.m3u8"
+
+For creating public\videos\input1\1080(all the m3u8 and .ts files)
+1080 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input1.mp4" -vf scale=1920:1080 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 20 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 3000k -maxrate 3500k -bufsize 4000k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input1\1080\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input1\1080\playlist.m3u8"
+
+For creating public\videos\input1\360(all the m3u8 and .ts files)
+1440 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input1.mp4" -vf scale=2560:1440 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 19 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 5000k -maxrate 5500k -bufsize 6000k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input1\1440\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input1\1440\playlist.m3u8"
+
+
+
+
+same for input2(project\myvideos\input2)
+
+For creating public\videos\input2\360(all the m3u8 and .ts files)
+360 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input2.mp4" -vf scale=640:360 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 23 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 365k -maxrate 400k -bufsize 600k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input2\360\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input2\360\playlist.m3u8"
+
+
+For creating public\videos\input2\480(all the m3u8 and .ts files)
+480 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input2.mp4" -vf scale=854:480 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 22 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 800k -maxrate 900k -bufsize 1200k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input2\480\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input2\480\playlist.m3u8"
+
+
+For creating public\videos\input2\720(all the m3u8 and .ts files)
+720 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input2.mp4" -vf scale=1280:720 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 21 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 1500k -maxrate 1800k -bufsize 2100k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input2\720\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input2\720\playlist.m3u8"
+
+
+For creating public\videos\input2\1080(all the m3u8 and .ts files)
+1080 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input2.mp4" -vf scale=1920:1080 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 20 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 3000k -maxrate 3500k -bufsize 4000k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input2\1080\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input2\1080\playlist.m3u8"
+
+
+For creating public\videos\input2\1440(all the m3u8 and .ts files)
+1440 Command
+ffmpeg -i "D:\VideoPlayer\frontend\myvideos\input2.mp4" -vf scale=2560:1440 -c:a aac -ar 48000 -c:v h264 -profile:v main `
+-crf 19 -g 48 -keyint_min 48 -sc_threshold 0 -b:v 5000k -maxrate 5500k -bufsize 6000k `
+-hls_time 4 -hls_playlist_type vod `
+-hls_segment_filename "D:\VideoPlayer\frontend\public\videos\input2\1440\segment_%03d.ts" `
+"D:\VideoPlayer\frontend\public\videos\input2\1440\playlist.m3u8"
+
+
+in sab files ko create karne ke baad 2 files aur create karni hongi dono folders ke liye input1 and input2 ke liye (public\videos\input1,input2)
+"""""""""""""""""""""""_________________________Master.m3u8______________________________"""""""""""""""""""""""""""""""
+For input1
+master.m3u8 file Command
+Set-Content -Path "public/videos/input1/master.m3u8" -Value @"
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=365000,RESOLUTION=640x360
+360/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480
+480/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720
+720/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,RESOLUTION=1920x1080
+1080/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=2560x1440
+1440/playlist.m3u8
+"@
+
+
+
+
+For input2
+master.m3u8 file Command
+Set-Content -Path "public/videos/input2/master.m3u8" -Value @"
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=365000,RESOLUTION=640x360
+360/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480
+480/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1500000,RESOLUTION=1280x720
+720/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,RESOLUTION=1920x1080
+1080/playlist.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=2560x1440
+1440/playlist.m3u8
+"@
+
+
+
+You can run these all the commands on powershell
