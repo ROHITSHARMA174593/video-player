@@ -273,7 +273,7 @@
 
 
 // src/pages/index.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PublicLayout from "@/Layouts/PublicLayout";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/router";
@@ -307,6 +307,7 @@ const Index = () => {
       genres: ["Romance", "Drama"],
       rating: 7.8,
       image: "/Images/HomePageImg/img3.jpg",
+      source: "/videos/input3/master.m3u8"
     },
     {
       title: "Survival Spliton",
@@ -399,8 +400,21 @@ const Index = () => {
       alert("Sorry, video source not available for this movie.");
     }
   }
-
   const router = useRouter()
+
+  // Theme According to state
+  const [userState, setUserState] = useState("");
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        const res = await fetch(`/api/get-location?lat=${latitude}&lon=${longitude}`);
+        const data = await res.json();
+        setUserState(data.state);
+      });
+    }
+  }, []);
 
 return (
   <PublicLayout>

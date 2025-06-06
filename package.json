@@ -11,6 +11,7 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.5",
     "@videojs/http-streaming": "^3.17.0",
+    "axios": "^1.9.0",
     "formidable": "^3.5.4",
     "gridfs-stream": "^1.1.1",
     "hls.js": "^1.6.3",
