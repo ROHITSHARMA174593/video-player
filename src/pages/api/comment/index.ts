@@ -1,19 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { dbConnect } from "@/lib/dbConnect";
-import Comment from "@/lib/Comment"; // This points to 'CommentSection' collection via Mongoose
+import Comment from "@/lib/Comment";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
 
   if (req.method === "POST") {
-    const { email, text } = req.body;
+    const { email, text, videoId } = req.body;
 
-    if (!email || !text) {
+    if (!videoId || !email || !text) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     try {
-      const newComment = await Comment.create({ email, text });
+      const newComment = await Comment.create({ email, text, videoId });
       return res.status(201).json(newComment);
     } catch (error) {
       return res.status(500).json({ message: "Error saving comment", error });
@@ -21,8 +21,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "GET") {
+    const { videoId } = req.query;
+
+    if (!videoId || typeof videoId !== "string") {
+      return res.status(400).json({ message: "videoId query param is required" });
+    }
+
     try {
-      const comments = await Comment.find().sort({ createdAt: -1 });
+      const comments = await Comment.find({ videoId }).sort({ createdAt: -1 });
       return res.status(200).json(comments);
     } catch (error) {
       return res.status(500).json({ message: "Error fetching comments", error });
