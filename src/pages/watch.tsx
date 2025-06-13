@@ -6,11 +6,12 @@ import { IoIosSettings } from "react-icons/io";
 import { IoArrowBack } from "react-icons/io5";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import LikeDislike from "@/components/LikeDislike";
+import { redirect } from "next/navigation";
 
 const Watch = () => {
   const router = useRouter();
-  const { videoId, title, source } = router.query; // fixed videoId spelling
-  const safeVideoId = Array.isArray(videoId) ? videoId[0] : videoId; // handle array or undefined
+  const { videoId, title, source } = router.query;
+  const safeVideoId = Array.isArray(videoId) ? videoId[0] : videoId; 
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -127,16 +128,20 @@ const Watch = () => {
   }, []);
 
   return (
-    <div>
+  <div>
+    <div
+      className="relative max-w-4xl mx-auto flex items-start mt-3 justify-center w-full h-screen"
+    >
+      {/* 👇 Wrapping the entire hover area */}
       <div
-        className="relative max-w-4xl mx-auto flex items-start mt-3 justify-center w-full h-screen"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setShowSettings(false);
+        }}
+        className="relative w-full h-full"
       >
         <video
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => {
-            setIsHovered(false);
-            setShowSettings(false);
-          }}
           ref={videoRef}
           controls
           className="w-full rounded-lg"
@@ -147,7 +152,7 @@ const Watch = () => {
         {isHovered && (
           <button
             onClick={toggleSettings}
-            className="absolute bottom-[23.3vh] right-55 z-50 p-2 rounded-full bg-transparent bg-opacity-50 hover:bg-opacity-80 text-white cursor-pointer"
+            className="absolute bottom-[23.45vh] right-55 z-50 p-2 rounded-full bg-transparent bg-opacity-50 hover:bg-opacity-80 text-white cursor-pointer"
             style={{ width: 36, height: 36 }}
             aria-label="Settings"
           >
@@ -155,7 +160,7 @@ const Watch = () => {
           </button>
         )}
 
-        {/* Back Button (on hover) */}
+        {/* Back Button */}
         {isHovered && (
           <button
             onClick={() => router.push("/")}
@@ -170,7 +175,12 @@ const Watch = () => {
           <div className="absolute bottom-36 right-24 bg-white bg-opacity-95 text-black rounded p-4 shadow-lg z-50 w-48">
             {menuLevel === "main" && (
               <>
-                <p className="font-bold text-lg mb-4">Settings</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-lg mb-4">Settings</p>
+                  <button onClick={() => setShowSettings(false)} className="cursor-pointer">
+                    <FaArrowLeftLong />
+                  </button>
+                </div>
                 <button
                   onClick={() => setMenuLevel("quality")}
                   className="w-full text-left px-2 py-1 rounded hover:bg-gray-200"
@@ -195,7 +205,7 @@ const Watch = () => {
                     key={label}
                     onClick={() => handleQualityChange(label)}
                     className={`block w-full text-left px-2 py-1 rounded hover:bg-gray-200 ${
-                      quality === label ? "bg-gray-300 font-semibold" : ""
+                      quality === label ? "bg-gray-300 font-semibold" : ""   
                     } cursor-pointer`}
                   >
                     {label}
@@ -206,11 +216,13 @@ const Watch = () => {
           </div>
         )}
       </div>
-
-      {/* Like/Dislike & Saved Section */}
-      {safeVideoId && <LikeDislike videoId={safeVideoId} />}
     </div>
-  );
+
+    {/* Like/Dislike & Saved Section */}
+    {safeVideoId && <LikeDislike videoId={safeVideoId} />}
+  </div>
+);
+
 };
 
 export default Watch;

@@ -23,30 +23,150 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
 
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
   const [savedButton, setSavedButton] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-
   const [comment, setComment] = useState("");
   const [commentsData, setCommentsData] = useState<
     { _id: string; email: string; text: string; createdAt: string }[]
   >([]);
-
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
-  const [dislikedComments, setDislikedComments] = useState<Set<string>>(
-    new Set()
-  );
+  const [dislikedComments, setDislikedComments] = useState<Set<string>>(new Set());
+  const [commentLikeCounts, setCommentLikeCounts] = useState<Record<string, number>>({});
+  const [commentDislikeCounts, setCommentDislikeCounts] = useState<Record<string, number>>({});
+
+  const getEmail = (): string | null => {
+    if (!session || !session.user || !session.user.email) {
+      setShowLoginPrompt(true);
+      return null;
+    }
+    return session.user.email;
+  };
+
+  const fetchLikes = async () => {
+    const email = getEmail();
+    if (!email) return;
+
+    try {
+      const res = await fetch(`/api/likes/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          videoId,
+          email,
+          action: "get",
+        }),
+      });
+      const data = await res.json();
+      setLikeCount(data.likeCount || 0);
+      setDislikeCount(data.dislikeCount || 0);
+      setLiked(data.liked || false);
+      setDisliked(data.disliked || false);
+    } catch (err) {
+      console.error("Error fetching like data:", err);
+    }
+  };
+
+  const updateLikeStatus = async (action: "like" | "dislike" | "neutral") => {
+    const email = getEmail();
+    if (!email) return;
+
+    try {
+      const res = await fetch("/api/likes/like", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId, email, action }),
+      });
+      const data = await res.json();
+      setLikeCount(data.likeCount || 0);
+      setDislikeCount(data.dislikeCount || 0);
+      setLiked(data.liked || false);
+      setDisliked(data.disliked || false);
+    } catch (err) {
+      console.error("Error updating like/dislike:", err);
+    }
+  };
+
+  const handleCommentLike = async (commentId: string) => {
+    const email = getEmail();
+    if (!email) return;
+
+    const alreadyLiked = likedComments.has(commentId);
+    const action = alreadyLiked ? "neutral" : "like";
+
+    try {
+      const res = await fetch("/api/commentlike/commentlike", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, videoId: commentId, action }),
+      });
+      const data = await res.json();
+
+      setLikedComments((prev) => {
+        const newSet = new Set(prev);
+        data.liked ? newSet.add(commentId) : newSet.delete(commentId);
+        return newSet;
+      });
+
+      setDislikedComments((prev) => {
+        const newSet = new Set(prev);
+        if (!data.disliked) newSet.delete(commentId);
+        return newSet;
+      });
+
+      setCommentLikeCounts((prev) => ({ ...prev, [commentId]: data.likeCount || 0 }));
+      setCommentDislikeCounts((prev) => ({ ...prev, [commentId]: data.dislikeCount || 0 }));
+    } catch (err) {
+      console.error("Error updating comment like:", err);
+    }
+  };
+
+  const handleCommentDislike = async (commentId: string) => {
+    const email = getEmail();
+    if (!email) return;
+
+    const alreadyDisliked = dislikedComments.has(commentId);
+    const action = alreadyDisliked ? "neutral" : "dislike";
+
+    try {
+      const res = await fetch("/api/commentlike/commentlike", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, videoId: commentId, action }),
+      });
+      const data = await res.json();
+
+      setDislikedComments((prev) => {
+        const newSet = new Set(prev);
+        data.disliked ? newSet.add(commentId) : newSet.delete(commentId);
+        return newSet;
+      });
+
+      setLikedComments((prev) => {
+        const newSet = new Set(prev);
+        if (!data.liked) newSet.delete(commentId);
+        return newSet;
+      });
+
+      setCommentLikeCounts((prev) => ({ ...prev, [commentId]: data.likeCount || 0 }));
+      setCommentDislikeCounts((prev) => ({ ...prev, [commentId]: data.dislikeCount || 0 }));
+    } catch (err) {
+      console.error("Error updating comment dislike:", err);
+    }
+  };
 
   const handleLike = () => {
     if (!session) return setShowLoginPrompt(true);
-    setLiked((prev) => !prev);
-    if (disliked) setDisliked(false);
+    const nextAction = liked ? "neutral" : "like";
+    updateLikeStatus(nextAction);
   };
 
   const handleDislike = () => {
     if (!session) return setShowLoginPrompt(true);
-    setDisliked((prev) => !prev);
-    if (liked) setLiked(false);
+    const nextAction = disliked ? "neutral" : "dislike";
+    updateLikeStatus(nextAction);
   };
 
   const handleSaveButton = () => {
@@ -64,54 +184,15 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
     router.push("/");
   };
 
-  const handleCommentLike = (commentId: string) => {
-    if (!session) return setShowLoginPrompt(true);
-    setLikedComments((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(commentId)) {
-        newSet.delete(commentId);
-      } else {
-        newSet.add(commentId);
-        setDislikedComments((prevDisliked) => {
-          const newDisliked = new Set(prevDisliked);
-          newDisliked.delete(commentId);
-          return newDisliked;
-        });
-      }
-      return newSet;
-    });
-  };
-
-  const handleCommentDislike = (commentId: string) => {
-    if (!session) return setShowLoginPrompt(true);
-    setDislikedComments((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(commentId)) {
-        newSet.delete(commentId);
-      } else {
-        newSet.add(commentId);
-        setLikedComments((prevLiked) => {
-          const newLiked = new Set(prevLiked);
-          newLiked.delete(commentId);
-          return newLiked;
-        });
-      }
-      return newSet;
-    });
-  };
-
   const handleCommentSubmit = async () => {
-    if (!comment.trim() || !session?.user?.email || !videoId) return;
+    const email = getEmail();
+    if (!email || !comment.trim()) return;
 
     try {
       await fetch("/api/comment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: session.user.email,
-          text: comment,
-          videoId,
-        }),
+        body: JSON.stringify({ email, text: comment, videoId }),
       });
       setComment("");
       fetchComments();
@@ -120,35 +201,70 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
     }
   };
 
-  //! Comment Fetching is Here ()
   const fetchComments = async () => {
-    if (!videoId) return;
     try {
       const res = await fetch(`/api/comment?videoId=${videoId}`);
-      if (!res.ok) throw new Error("Failed to fetch comments");
       const data = await res.json();
       setCommentsData(data);
     } catch (err) {
       console.error("Error fetching comments:", err);
     }
   };
+  //! fetchCommentLike from API
+  const fetchCommentLikes = async () => {
+  const email = getEmail();
+  if (!email || commentsData.length === 0) return;
+
+  try {
+    const res = await fetch("/api/commentlike/commentlike", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        commentIds: commentsData.map((comment) => comment._id),
+        action: "get",
+      }),
+    });
+
+    const data = await res.json();
+
+    setLikedComments(new Set(data.likedCommentIds || []));
+    setDislikedComments(new Set(data.dislikedCommentIds || []));
+
+    // Like/dislike count update
+    const likeMap: Record<string, number> = {};
+    const dislikeMap: Record<string, number> = {};
+    for (const commentId in data.likeDislikeMap) {
+      likeMap[commentId] = data.likeDislikeMap[commentId].likes;
+      dislikeMap[commentId] = data.likeDislikeMap[commentId].dislikes;
+    }
+
+    setCommentLikeCounts(likeMap);
+    setCommentDislikeCounts(dislikeMap);
+  } catch (err) {
+    console.error("Error fetching comment likes:", err);
+  }
+};
+
 
   useEffect(() => {
-    fetchComments();
-  }, [videoId]);
+    if (videoId && session) {
+      fetchLikes();
+      fetchComments();
+    }
+  }, [videoId, session]);
 
   return (
     <>
-      {/* Action Buttons Bar */}
       <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex gap-6 text-black bg-gray-200 bg-opacity-30 px-4 py-2 rounded-xl z-50">
         <button onClick={handleLike} className="flex items-center gap-1 hover:scale-110 transition-transform">
           {liked ? <FaThumbsUp className="text-black" /> : <FaRegThumbsUp />}
-          <span className="text-sm">Like</span>
+          <span className="text-sm">{likeCount}</span>
         </button>
 
         <button onClick={handleDislike} className="flex items-center gap-1 hover:scale-110 transition-transform">
           {disliked ? <FaThumbsDown className="text-black" /> : <FaRegThumbsDown />}
-          <span className="text-sm">Dislike</span>
+          <span className="text-sm">{dislikeCount}</span>
         </button>
 
         <button onClick={toggleCommentBox} className="flex items-center gap-1 hover:scale-110 transition-transform">
@@ -172,10 +288,7 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
         <div className="flex flex-col mx-auto w-[80%] max-w-xl bg-white bg-opacity-90 p-4 rounded-lg shadow-lg z-40">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-black font-semibold text-lg">Comment</h1>
-            <button
-              onClick={() => setShowCommentBox(false)}
-              className="text-black hover:text-gray-600 transition text-2xl"
-            >
+            <button onClick={() => setShowCommentBox(false)} className="text-black hover:text-gray-600 transition text-2xl">
               <RxCross2 />
             </button>
           </div>
@@ -188,21 +301,14 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
             rows={3}
           />
           <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setShowCommentBox(false)}
-              className="px-4 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded"
-            >
+            <button onClick={() => setShowCommentBox(false)} className="px-4 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded">
               Cancel
             </button>
-            <button
-              onClick={handleCommentSubmit}
-              className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
+            <button onClick={handleCommentSubmit} className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded">
               Submit
             </button>
           </div>
 
-          {/* Comments List */}
           <div className="mt-4 space-y-4">
             {commentsData.map((curElem) => (
               <div key={curElem._id} className="flex space-x-3 border-b border-gray-300 pb-3">
@@ -212,39 +318,17 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
                     <span className="font-semibold text-gray-900">{curElem.email}</span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(curElem.createdAt).toLocaleString(undefined, {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+                    
                   </div>
                   <p className="mt-1 text-gray-800">{curElem.text}</p>
                   <div className="flex gap-4 mt-2">
-                    <button
-                      onClick={() => handleCommentLike(curElem._id)}
-                      className="flex items-center gap-1 hover:scale-110 transition-transform"
-                    >
-                      {likedComments.has(curElem._id) ? (
-                        <FaThumbsUp className="text-blue-500" />
-                      ) : (
-                        <FaRegThumbsUp />
-                      )}
-                      <span className="text-sm">Like</span>
+                    <button onClick={() => handleCommentLike(curElem._id)} className="flex items-center gap-1 hover:scale-110 transition-transform">
+                      {likedComments.has(curElem._id) ? <FaThumbsUp className="text-blue-500" /> : <FaRegThumbsUp />}
+                      <span className="text-sm">{commentLikeCounts[curElem._id] || 0}</span>
                     </button>
-                    <button
-                      onClick={() => handleCommentDislike(curElem._id)}
-                      className="flex items-center gap-1 hover:scale-110 transition-transform"
-                    >
-                      {dislikedComments.has(curElem._id) ? (
-                        <FaThumbsDown className="text-red-500" />
-                      ) : (
-                        <FaRegThumbsDown />
-                      )}
-                      <span className="text-sm">Dislike</span>
+                    <button onClick={() => handleCommentDislike(curElem._id)} className="flex items-center gap-1 hover:scale-110 transition-transform">
+                      {dislikedComments.has(curElem._id) ? <FaThumbsDown className="text-red-500" /> : <FaRegThumbsDown />}
+                      <span className="text-sm">{commentDislikeCounts[curElem._id] || 0}</span>
                     </button>
                   </div>
                 </div>
@@ -254,21 +338,14 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
         </div>
       )}
 
-      {/* Login Prompt */}
       {showLoginPrompt && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
           <div className="bg-white p-6 rounded shadow-lg relative w-80 text-center">
-            <button
-              className="absolute top-2 right-3 text-2xl font-bold cursor-pointer hover:text-red-600"
-              onClick={handleCloseLoginPrompt}
-            >
+            <button className="absolute top-2 right-3 text-2xl font-bold cursor-pointer hover:text-red-600" onClick={handleCloseLoginPrompt}>
               &times;
             </button>
             <h2 className="mb-4 font-semibold text-lg">Please Login</h2>
-            <button
-              onClick={() => signIn()}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            >
+            <button onClick={() => signIn()} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
               Login
             </button>
           </div>
