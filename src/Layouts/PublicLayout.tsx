@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import OTPForm from "@/components/OTPForm";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FiBell, FiMenu, FiHome } from "react-icons/fi";
 import { SiYoutubeshorts } from "react-icons/si";
 import { FaBookmark } from "react-icons/fa6";
 import { LiaDownloadSolid } from "react-icons/lia";
+import { RxCross2 } from "react-icons/rx";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 type Notification = {
@@ -53,13 +55,97 @@ const notifications: Notification[] = [
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [loginTime, setLoginTime] = useState("");
+  const [showOTPForm, setShowOTPForm] = useState(false);
+  const [sessionStateChecked, setSessionStateChecked] = useState(false);
+
+  // OTP verification
+  const handlePostLogin = async () => {
+  if (session && typeof window !== "undefined" && !sessionStateChecked) {
+    console.log("OTP Logic Triggered ✅");
+
+    const alreadyVerified = localStorage.getItem("otpVerified");
+    console.log("otpVerified value in localStorage:", alreadyVerified);
+
+    if (alreadyVerified === "true") return;
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        console.log("📍 Geolocation Success");
+        console.log("Latitude:", position.coords.latitude);
+        console.log("Longitude:", position.coords.longitude);
+
+        const res = await fetch(
+          `/api/get-location?lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+        );
+
+        const data = await res.json();
+        console.log("📦 Location API Response:", data);
+
+        const state = data.state?.toLowerCase() || "";
+        console.log("🧭 Detected State:", state);
+
+        const southStates = [
+          "tamil nadu",
+          "kerala",
+          "karnataka",
+          "andhra pradesh",
+          "telangana",
+        ];
+
+        if (southStates.includes(state)) {
+          console.log("📩 Sending Email OTP...");
+          await fetch("/api/send-email-otp", {
+            method: "POST",
+            body: JSON.stringify({ email: session.user?.email }),
+            headers: { "Content-Type": "application/json" },
+          });
+          localStorage.setItem("otpVerified", "true");
+        } else {
+          console.log("📲 Showing OTP Form...");
+          setShowOTPForm(true);
+        }
+
+        setSessionStateChecked(true);
+      },
+      (err) => {
+        console.error("❌ Geolocation Error:", err);
+      }
+    );
+  }
+};
+
+  useEffect(() => {
+    handlePostLogin();
+
+  }, [session, sessionStateChecked]);
+
+  // Time
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      const now = new Date();
+      const formatteTime = now.toLocaleTimeString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+        timeZone: "Asia/Kolkata",
+      });
+      setLoginTime(formatteTime);
+
+      console.log("User logged in at (IST):", formatteTime);
+    }
+  }, [status, session]);
 
   const layoutStyle = {
-    paddingLeft: isSidebarOpen ? "16.5rem" : "6rem", // Adjust padding based on sidebar width
+    paddingLeft: isSidebarOpen ? "16.5rem" : "6rem",
     marginTop: "6rem",
-    zIndex: 10, // Ensure the content has higher z-index than sidebar
+    zIndex: 10,
   };
+
+  //! __________________________________________________________________________________________________________________________________________
+  console.log("Session Data:", session);
+  //! __________________________________________________________________________________________________________________________________________
 
   const Navbar = () => (
     <aside
@@ -147,15 +233,27 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 {userInitial}
               </button>
               {showLogout && (
-                <button
-                  onClick={() => {
-                    signOut();
-                    setShowLogout(false);
-                  }}
-                  className="absolute right-0 mt-2 bg-white text-black border border-gray-300 px-4 py-1 rounded-md shadow-md z-40"
-                >
-                  LogOut
-                </button>
+                <div className="w-40 h-16 absolute right-0 mt-2 bg-white text-black border border-gray-300 px-4 py-2 rounded-md shadow-md z-40">
+                  <div className="w-full flex justify-end">
+                    <button
+                      className="text-xl text-gray-500 hover:text-red-500 transition"
+                      onClick={() => router.push("/")}
+                    >
+                      <RxCross2 />
+                    </button>
+                  </div>
+                  <div className="flex flex-1 items-center justify-center">
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("otp-verified") // data remove karne ke liye
+                        signOut();
+                        setShowLogout(false);
+                      }}
+                    >
+                      LogOut
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           ) : (
@@ -171,28 +269,28 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     );
   };
 
+  type OTPFormProps = {
+    onVerified: () => void;
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* ✅ Topbar Wrapper */}
       <div className="z-30" id="div-topbar">
         <Topbar notifications={notifications} />
       </div>
 
-      {/* ✅ Layout Wrapper */}
+      {showOTPForm && (
+        <OTPForm
+          onVerified={() => {
+            setShowOTPForm(false);
+            localStorage.setItem("otpVerified", "true");
+          }}
+        />
+      )}
+
       <div className="flex  min-h-screen" id="div-layout-content">
-        {/* Sidebar */}
         <Navbar />
 
-        {/* Main Content */}
-        {/* <main
-          className="transition-all duration-300 flex"
-          style={layoutStyle}
-        >
-          <div className={`flex   min-h-screen ${isSidebarOpen ? "w-[22.5%]" : "w-[2%]"}`}></div>
-          <div className={`  ${isSidebarOpen ? "w-[79.5%]" : "w-[98%]"}`}>{children}</div>
-        </main> */}
-
-        {/*! Main Content  */}
         <main
           className="transition-all duration-300 flex w-full"
           style={layoutStyle}

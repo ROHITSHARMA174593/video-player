@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const newComment = await Comment.create({ email, text, videoId });
       return res.status(201).json(newComment);
     } catch (error) {
+      console.error("Error in Comment Saving : ",error)
       return res.status(500).json({ message: "Error saving comment", error });
     }
   }

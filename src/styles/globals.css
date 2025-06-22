@@ -13,8 +13,12 @@
   display: none;
 }
 
+ * {
+      -webkit-user-select: none; 
+      -ms-user-select: none; 
+      user-select: none; 
+    }
 
-/* globals.css me add karo */
 
   /* Hide the scrollbar but keep the scroll functionality */
 .hide-scrollbar::-webkit-scrollbar {

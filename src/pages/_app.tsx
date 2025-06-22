@@ -1,83 +1,113 @@
-// import "@/styles/globals.css";
-// import "slick-carousel/slick/slick.css"; 
-// import "slick-carousel/slick/slick-theme.css";
-// import "video.js/dist/video-js.css"; // ✅ Video.js ka CSS import
-
-// import type { AppProps } from "next/app";
-// import { SessionProvider } from "next-auth/react";
-
-// export default function App({ Component, pageProps }: AppProps) {
-//   return (
-//     <SessionProvider session={pageProps.session}>
-//       <Component {...pageProps} />
-//     </SessionProvider>
-//   );
-// }
-
-
-
-
-// src/pages/_app.tsx
 import "@/styles/globals.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "video.js/dist/video-js.css";
-
 import type { AppProps } from "next/app";
+import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { SessionProvider } from "next-auth/react";
+import dynamic from "next/dynamic";
 
-export default function App({ Component, pageProps }: AppProps) {
+const OTPForm = dynamic(() => import("@/components/OTPForm"), { ssr: false });
+
+const Wrapper = ({ Component, pageProps }: AppProps) => {
+  const { data: session, status } = useSession();
   const [theme, setTheme] = useState("dark");
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [shouldAskPhone, setShouldAskPhone] = useState(false);
 
   useEffect(() => {
-  const checkTheme = async () => {
-    try {
-      const geo = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
-
-      const lat = geo.coords.latitude;
-      const lon = geo.coords.longitude;
-
-      const res = await fetch(`/api/get-location?lat=${lat}&lon=${lon}`);
-      const { state } = await res.json();
-
-      const now = new Date();
-      const hour = now.getHours();
-
-      const southStates = ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh", "Telangana"];
-      const isSouth = southStates.includes(state);
-      const isBetween10And12 = hour >= 10 && hour <= 12;
-
-      // ✅ Console logs for debugging
-      console.log("User location state:", state);
-      if (isSouth) {
-        console.log("✅ South Indian user detected");
-      } else {
-        console.log("🧭 Non-South Indian user");
+    const checkThemeAndOtp = async () => {
+      if (status !== "authenticated") {
+        console.log("⛔ User not authenticated yet");
+        return;
       }
 
+      console.log("✅ Authenticated User:", session?.user);
+
+      const geo = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      );
+
+      console.log("📍 Coordinates:", geo.coords.latitude, geo.coords.longitude);
+
+      const res = await fetch(
+        `/api/get-location?lat=${geo.coords.latitude}&lon=${geo.coords.longitude}`
+      );
+      const { state } = await res.json();
+
+      console.log("🗺️ User State from API:", state);
+
+      const hour = new Date().getHours();
+      console.log("⏰ Current Hour:", hour);
+
+      const southStates = [
+        "Tamil Nadu",
+        "Kerala",
+        "Karnataka",
+        "Andhra Pradesh",
+        "Telangana",
+      ];
+      const isSouth = southStates.includes(state);
+      console.log("🌐 Is South India?", isSouth);
+
+      const isBetween10And12 = hour >= 10 && hour <= 12;
+      console.log("⏳ Is Between 10-12?", isBetween10And12);
+
+      // Theme logic (optional for now)
       if (isSouth && isBetween10And12) {
         setTheme("light");
         document.documentElement.classList.remove("dark");
+        console.log("🎨 Theme set to LIGHT");
       } else {
         setTheme("dark");
         document.documentElement.classList.add("dark");
+        console.log("🎨 Theme set to DARK");
       }
 
-    } catch (err) {
-      console.error("Theme detection failed:", err);
-    }
-  };
+      const alreadyVerified = localStorage.getItem("otp-verified");
+      console.log("🔐 OTP Verified (from localStorage)?", alreadyVerified);
 
-  checkTheme();
-}, []);
+      if (!alreadyVerified) {
+        if (isSouth) {
+          console.log("📩 Sending Email OTP...");
+          const otp = Math.floor(100000 + Math.random() * 900000);
 
+          await fetch("/api/send-email-otp", {
+            method: "POST",
+            body: JSON.stringify({ email: session.user?.email, otp }),
+            headers: { "Content-Type": "application/json" },
+          });
+
+          localStorage.setItem("otp-verified", "true");
+        } else {
+          console.log("📲 Showing OTP popup (non-south + not verified)");
+          setShouldAskPhone(true);
+          setShowOtpPopup(true);
+        }
+      }
+    };
+
+    checkThemeAndOtp();
+  }, [status]);
 
   return (
-    <SessionProvider session={pageProps.session}>
+    <>
+      {showOtpPopup && shouldAskPhone && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <OTPForm
+            onVerified={() => {
+              localStorage.setItem("otp-verified", "true");
+              setShowOtpPopup(false);
+            }}
+          />
+        </div>
+      )}
       <Component {...pageProps} theme={theme} />
+    </>
+  );
+};
+
+export default function App(props: AppProps) {
+  return (
+    <SessionProvider session={props.pageProps.session}>
+      <Wrapper {...props} />
     </SessionProvider>
   );
 }

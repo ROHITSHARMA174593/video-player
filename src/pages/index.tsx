@@ -120,7 +120,6 @@ const Index = () => {
   };
 
   // Video Settings
-  const [selectedVideo, setSelectedVideo] = useState<Movie | null>(null);
   const handleMovieClick = (movie: {title: string; source?:string; videoId:string}) => {
      if (movie.source) {
       router.push({
