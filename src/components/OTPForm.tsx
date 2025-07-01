@@ -1,31 +1,36 @@
-// components/OTPForm.tsx
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function OTPForm({ onVerified }: { onVerified: () => void }) {
   const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const router = useRouter();
 
   const sendOtp = async () => {
-    const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
-    const otp = Math.floor(100000 + Math.random() * 900000);
+  const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
 
-    const res = await fetch("/api/send-otp-sms", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: formattedPhone, otp }),
-    });
+  const res = await fetch("/api/send-otp-sms", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone: formattedPhone }), // ✅ NO OTP
+  });
 
-    if (res.ok) {
-      console.log("📱 OTP sent successfully");
-      setOtpSent(true);
-      setTimeout(() => {
-        onVerified(); // hide the popup after OTP sent
-      }, 1000);
-    } else {
-      console.error("❌ OTP send failed");
-    }
-  };
-  console.log(phone)
+  if (res.ok) {
+    console.log("📱 OTP sent successfully");
+
+    localStorage.setItem("phone", formattedPhone);
+    setOtpSent(true);
+    onVerified();
+
+    setTimeout(() => {
+      setOtpSent(false);
+      router.push("/verify-otp");
+    }, 1500);
+  } else {
+    console.error("❌ OTP send failed");
+  }
+};
+
 
   return (
     <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
