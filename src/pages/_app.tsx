@@ -69,7 +69,7 @@ const Wrapper = ({ Component, pageProps }: AppProps) => {
           console.log("📩 Sending Email OTP...");
           const otp = Math.floor(100000 + Math.random() * 900000);
 
-          await fetch("/api/send-email-otp", {
+          await fetch("/api/send-otp-email", {
             method: "POST",
             body: JSON.stringify({ email: session.user?.email, otp }),
             headers: { "Content-Type": "application/json" },

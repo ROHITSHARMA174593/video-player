@@ -8,6 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { email, otp } = req.body;
+  console.log(email, otp)
 
   if (!email || !otp) {
     return res.status(400).json({ message: "Missing email or OTP" });

@@ -18,7 +18,7 @@ export default function Home() {
     try {
       const data = { videoURL };
       const res = await fetch('/api/hello', {
-        method: 'POST',
+        method: 'POST',             
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
