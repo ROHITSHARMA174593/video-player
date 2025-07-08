@@ -20,6 +20,7 @@ type Notification = {
 
 type PublicLayoutProps = {
   children: React.ReactNode;
+  theme: "dark" | "light";   // dark or light sending from _app.tsx
 };
 
 const navLinks = [
@@ -52,7 +53,7 @@ const notifications: Notification[] = [
   },
 ];
 
-const PublicLayout = ({ children }: PublicLayoutProps) => {
+const PublicLayout = ({ children, theme }: PublicLayoutProps) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -137,6 +138,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     }
   }, [status, session]);
 
+  //! Side bar Settings
   const layoutStyle = {
     paddingLeft: isSidebarOpen ? "16.5rem" : "6rem",
     marginTop: "6rem",
@@ -149,7 +151,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   const Navbar = () => (
     <aside
-      className={`bg-white shadow-md fixed top-20 sm:top-20 left-0 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] transition-all duration-300 p-3 sm:p-4 flex flex-col z-20 ${
+      className={`${theme === "dark" ? "bg-black text-white " : "bg-white text-black"} shadow-md fixed  sm:top-20 left-0 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] transition-all duration-300 p-3 sm:p-4 flex flex-col z-20 ${
         isSidebarOpen ? "w-48 sm:w-64" : "w-16 sm:w-20"
       }`}
     >
@@ -179,7 +181,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               className={`flex items-center gap-3 sm:gap-4 py-2 px-2 sm:px-3 rounded-lg transition-all ${
                 isActive
                   ? "bg-red-100 text-red-600 font-semibold"
-                  : "hover:bg-gray-100"
+                  : `${theme === "dark" ? "" : "hover:bg-gray-100"}`
               }`}
             >
               {icon}
@@ -201,7 +203,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     const userInitial = session?.user?.email?.[0].toUpperCase();
 
     return (
-      <header className="bg-white shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-30 h-20 md:h-16">
+      <header className={`${theme === "dark" ? "bg-black text-white" : "bg-white text-black"} shadow-md p-4 flex justify-between items-center fixed top-0 left-0 w-full z-30 h-20 md:h-16`}>
         <h2 className="md:font-bold font-bold text-3xl md:text-2xl ">
           Video Player
         </h2>
@@ -274,7 +276,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className={`${theme === "dark" ? "bg-[#181a1d] text-white" : "bg-white text-black"} flex flex-col min-h-screen`}>
       <div className="z-30" id="div-topbar">
         <Topbar notifications={notifications} />
       </div>

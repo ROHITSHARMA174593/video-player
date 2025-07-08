@@ -13,11 +13,13 @@ import { RxCross2 } from "react-icons/rx";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
-interface LikeDislikeProps {
+type LikeDislikeProps = {
   videoId: string;
-}
+  theme: "dark" | "light";
+};
 
-const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
+
+const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -250,12 +252,12 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
 
   return (
     <>
-      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex gap-6 text-black bg-gray-200 bg-opacity-30 px-4 py-2 rounded-xl z-50">
+      <div className={` ${theme === "dark" ? "bg-black text-white" : "bg-gray-200 text-black" } absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-6   bg-opacity-30 px-4 py-2 rounded-xl z-50`}>
         <button
           onClick={handleLike}
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
-          {liked ? <FaThumbsUp className="text-black" /> : <FaRegThumbsUp />}
+          {liked ? <FaThumbsUp className={`${theme === "dark" ? "text-white" : "text-black"}`} /> : <FaRegThumbsUp />}
           <span className="text-sm">{likeCount}</span>
         </button>
 
@@ -264,7 +266,7 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
           {disliked ? (
-            <FaThumbsDown className="text-black" />
+            <FaThumbsDown className={`${theme === "dark" ? "text-white" : "text-black"}`} />
           ) : (
             <FaRegThumbsDown />
           )}
@@ -284,7 +286,7 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
           {savedButton ? <BsBookmarkFill /> : <BsBookmark />}
-          <span className="text-sm">{savedButton ? "Saved" : "Save"}</span>
+          <span className={`${theme === "dark" ? "text-white" : "text-black"}`}>{savedButton ? "Saved" : "Save"}</span>
         </button>
 
         <button className="flex items-center gap-1 hover:scale-110 transition-transform">
@@ -295,9 +297,9 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
 
       {/* Comment Box */}
       {showCommentBox && (
-        <div className="flex flex-col mx-auto w-[80%] max-w-xl bg-white bg-opacity-90 p-4 rounded-lg shadow-lg z-40">
+        <div className={`${theme === "dark" ? "bg-[#101011] text-white" : "bg-white text-black"} flex flex-col mx-auto w-[80%] max-w-xl  bg-opacity-90 p-4 rounded-lg shadow-lg z-40`}>
           <div className="flex justify-between items-center mb-2">
-            <h1 className="text-black font-semibold text-lg">Comment</h1>
+            <h1 className={`${theme === "dark" ? "text-white" : "text-black"} font-semibold text-lg`}>Comment</h1>
             <button
               onClick={() => setShowCommentBox(false)}
               className="text-black hover:text-gray-600 transition text-2xl"
@@ -310,19 +312,19 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
             placeholder="Write a comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
+            className={`${theme === "dark" ? "text-white" : "text-black"} w-full p-2 border border-gray-300 rounded mb-2`}
             rows={3}
           />
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setShowCommentBox(false)}
-              className="px-4 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded"
+              className="px-4 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleCommentSubmit}
-              className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
             >
               Submit
             </button>
@@ -339,13 +341,13 @@ const LikeDislike: React.FC<LikeDislikeProps> = ({ videoId }) => {
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-900">
+                    <span className={`font-semibold  ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
                       {curElem.email}
                     </span>
                     {/* yaha per baad me date and time add karunga */}
                   </div>
 
-                  <p className="mt-1 text-gray-800">{curElem.text}</p>
+                  <p className={`mt-1  ${theme === "dark" ? "text-white" : "text-gray-900"}`}>{curElem.text}</p>
                   <div className="flex gap-4 mt-2">
                     <button
                       className="flex items-center gap-1 hover:scale-110 transition-transform"

@@ -8,7 +8,11 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import LikeDislike from "@/components/LikeDislike";
 import { redirect } from "next/navigation";
 
-const Watch = () => {
+type WatchPageTheme = {
+  theme : "light" | "dark"; // from _app.tsx file
+}
+
+const Watch = ({theme} : WatchPageTheme) => {
   const router = useRouter();
   const { videoId, title, source } = router.query;
   const safeVideoId = Array.isArray(videoId) ? videoId[0] : videoId; 
@@ -128,9 +132,9 @@ const Watch = () => {
   }, []);
 
   return (
-  <div>
+  <div className={`${theme === "dark" ? "bg-[#181a1d]" : "bg-white"} m-0`}>
     <div
-      className="relative max-w-4xl mx-auto flex items-start mt-3 justify-center w-full h-screen"
+      className={`${theme === "dark" ? "bg-[#181a1d]" : "bg-white"}  relative max-w-4xl mx-auto flex items-start mt-0 pt-4 justify-center w-full h-screen`}
     >
       {/* 👇 Wrapping the entire hover area */}
       <div
@@ -152,7 +156,7 @@ const Watch = () => {
         {isHovered && (
           <button
             onClick={toggleSettings}
-            className="absolute bottom-[23.45vh] right-55 z-50 p-2 rounded-full bg-transparent bg-opacity-50 hover:bg-opacity-80 text-white cursor-pointer"
+            className="absolute bottom-[21.45vh] right-55 z-50 p-2 rounded-full bg-transparent bg-opacity-50 hover:bg-opacity-80 text-white cursor-pointer"
             style={{ width: 36, height: 36 }}
             aria-label="Settings"
           >
@@ -219,7 +223,7 @@ const Watch = () => {
     </div>
 
     {/* Like/Dislike & Saved Section */}
-    {safeVideoId && <LikeDislike videoId={safeVideoId} />}
+    {safeVideoId && <LikeDislike  videoId={safeVideoId} theme={theme}/>}
   </div>
 );
 

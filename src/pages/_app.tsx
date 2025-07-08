@@ -8,7 +8,7 @@ const OTPForm = dynamic(() => import("@/components/OTPForm"), { ssr: false });
 
 const Wrapper = ({ Component, pageProps }: AppProps) => {
   const { data: session, status } = useSession();
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [shouldAskPhone, setShouldAskPhone] = useState(false);
 
@@ -52,13 +52,13 @@ const Wrapper = ({ Component, pageProps }: AppProps) => {
 
       // Theme logic (optional for now)
       if (isSouth && isBetween10And12) {
-        setTheme("light");
-        document.documentElement.classList.remove("dark");
-        console.log("🎨 Theme set to LIGHT");
-      } else {
         setTheme("dark");
-        document.documentElement.classList.add("dark");
+        document.documentElement.classList.add("dark"); // ✅ add dark
         console.log("🎨 Theme set to DARK");
+      } else {
+        setTheme("light");
+        document.documentElement.classList.remove("dark"); // ✅ remove dark
+        console.log("🎨 Theme set to LIGHT");
       }
 
       const alreadyVerified = localStorage.getItem("otp-verified");
@@ -99,7 +99,8 @@ const Wrapper = ({ Component, pageProps }: AppProps) => {
           />
         </div>
       )}
-      <Component {...pageProps} theme={theme} />
+      <Component {...pageProps} theme={theme} />{" "}
+      {/* yaha se theme wali class ko bhej rhe hai  */}
     </>
   );
 };

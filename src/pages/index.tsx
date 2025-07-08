@@ -4,7 +4,12 @@ import PublicLayout from "@/Layouts/PublicLayout";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/router";
 
-const Index = () => {
+type HomeProps= {
+  theme: "dark" | "light"; // dark or light sending from _app.tsx
+}
+
+
+const Index = ({theme} : HomeProps) => {
   type Movie = {
     title: string;
     genres: string[];
@@ -153,7 +158,7 @@ const Index = () => {
 
   
 return (
-  <PublicLayout>
+  <PublicLayout theme={theme}>
   <div className="flex flex-col pr-3 overflow-x-hidden">
     <div className="main-container w-full max-w-full sm:px-2">
       {/* Header Content */}
