@@ -7,13 +7,13 @@ export default function OTPForm({ onVerified }: { onVerified: () => void }) {
   const router = useRouter();
 
   const sendOtp = async () => {
-  const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
+    const formattedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
 
-  const res = await fetch("/api/send-otp-sms", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone: formattedPhone }), // ✅ NO OTP
-  });
+    const res = await fetch("/api/send-otp-sms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: formattedPhone }), // ✅ NO OTP
+    });
 
   if (res.ok) {
     console.log("📱 OTP sent successfully");

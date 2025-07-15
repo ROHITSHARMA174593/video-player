@@ -18,7 +18,6 @@ type LikeDislikeProps = {
   theme: "dark" | "light";
 };
 
-
 const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -250,14 +249,59 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
     }
   }, [commentsData, session]);
 
+  //! Translate Function for Comment Section
+  interface TranslatedComment {
+    [commentId: string]: string;
+  }
+  const [translatedComment, setTranslatedComment] = useState<TranslatedComment>(
+    {}
+  );
+  const [loadingTranslate, setLoadingTranslate] = useState<string | null>(null);
+
+  const handleTranslateFunc = async (
+    commentId: string | number,
+    text: string
+  ): Promise<void> => {
+    const safeID = String(commentId);
+    setLoadingTranslate(safeID);
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      });
+      const data: { translatedText: string } = await res.json();
+      setTranslatedComment((prev) => ({
+        ...prev,
+        [safeID]: data.translatedText,
+      }));
+    } catch (err) {
+      console.log("Translated Failed");
+    } finally {
+      setLoadingTranslate(null);
+    }
+  };
+
   return (
     <>
-      <div className={` ${theme === "dark" ? "bg-black text-white" : "bg-gray-200 text-black" } absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-6   bg-opacity-30 px-4 py-2 rounded-xl z-50`}>
+      <div
+        className={` ${
+          theme === "dark" ? "bg-black text-white" : "bg-gray-200 text-black"
+        } absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-6   bg-opacity-30 px-4 py-2 rounded-xl z-50`}
+      >
         <button
           onClick={handleLike}
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
-          {liked ? <FaThumbsUp className={`${theme === "dark" ? "text-white" : "text-black"}`} /> : <FaRegThumbsUp />}
+          {liked ? (
+            <FaThumbsUp
+              className={`${theme === "dark" ? "text-white" : "text-black"}`}
+            />
+          ) : (
+            <FaRegThumbsUp />
+          )}
           <span className="text-sm">{likeCount}</span>
         </button>
 
@@ -266,7 +310,9 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
           {disliked ? (
-            <FaThumbsDown className={`${theme === "dark" ? "text-white" : "text-black"}`} />
+            <FaThumbsDown
+              className={`${theme === "dark" ? "text-white" : "text-black"}`}
+            />
           ) : (
             <FaRegThumbsDown />
           )}
@@ -286,7 +332,9 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
           className="flex items-center gap-1 hover:scale-110 transition-transform"
         >
           {savedButton ? <BsBookmarkFill /> : <BsBookmark />}
-          <span className={`${theme === "dark" ? "text-white" : "text-black"}`}>{savedButton ? "Saved" : "Save"}</span>
+          <span className={`${theme === "dark" ? "text-white" : "text-black"}`}>
+            {savedButton ? "Saved" : "Save"}
+          </span>
         </button>
 
         <button className="flex items-center gap-1 hover:scale-110 transition-transform">
@@ -297,9 +345,19 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
 
       {/* Comment Box */}
       {showCommentBox && (
-        <div className={`${theme === "dark" ? "bg-[#101011] text-white" : "bg-white text-black"} flex flex-col mx-auto w-[80%] max-w-xl  bg-opacity-90 p-4 rounded-lg shadow-lg z-40`}>
+        <div
+          className={`${
+            theme === "dark" ? "bg-[#101011] text-white" : "bg-white text-black"
+          } flex flex-col mx-auto w-[80%] max-w-xl  bg-opacity-90 p-4 rounded-lg shadow-lg z-40`}
+        >
           <div className="flex justify-between items-center mb-2">
-            <h1 className={`${theme === "dark" ? "text-white" : "text-black"} font-semibold text-lg`}>Comment</h1>
+            <h1
+              className={`${
+                theme === "dark" ? "text-white" : "text-black"
+              } font-semibold text-lg`}
+            >
+              Comment
+            </h1>
             <button
               onClick={() => setShowCommentBox(false)}
               className="text-black hover:text-gray-600 transition text-2xl"
@@ -312,7 +370,9 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
             placeholder="Write a comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className={`${theme === "dark" ? "text-white" : "text-black"} w-full p-2 border border-gray-300 rounded mb-2`}
+            className={`${
+              theme === "dark" ? "text-white" : "text-black"
+            } w-full p-2 border border-gray-300 rounded mb-2`}
             rows={3}
           />
           <div className="flex justify-end gap-2">
@@ -329,57 +389,92 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
               Submit
             </button>
           </div>
-
+{/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
           <div className="mt-4 space-y-4">
-            {commentsData.map((curElem) => (
-              <div
-                key={curElem._id}
-                className="flex space-x-3 border-b border-gray-300 pb-3"
-              >
-                <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
-                  {curElem.email.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-center">
-                    <span className={`font-semibold  ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                      {curElem.email}
-                    </span>
-                    {/* yaha per baad me date and time add karunga */}
+            {commentsData.map((curElem) => {
+              const safeId = String(curElem._id);
+              const translated = translatedComment[safeId];
+
+              return (
+                <div
+                  key={safeId}
+                  className="flex space-x-3 border-b border-gray-300 pb-3"
+                >
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
+                    {curElem.email?.charAt(0).toUpperCase() || "?"}
                   </div>
 
-                  <p className={`mt-1  ${theme === "dark" ? "text-white" : "text-gray-900"}`}>{curElem.text}</p>
-                  <div className="flex gap-4 mt-2">
-                    <button
-                      className="flex items-center gap-1 hover:scale-110 transition-transform"
-                      onClick={() => handleCommentLike(curElem._id)}
-                    >
-                      {likedComments.has(curElem._id) ? (
-                        <FaThumbsUp className="text-blue-500" />
-                      ) : (
-                        <FaRegThumbsUp />
-                      )}
-                      <span className="text-sm">
-                        {commentLikeCounts[curElem._id] || 0}
+                  {/* Main Content */}
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={`font-semibold ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        {curElem.email || "Anonymous"}
                       </span>
-                    </button>
-                    <button
-                      className="flex items-center gap-1 hover:scale-110 transition-transform"
-                      onClick={() => handleCommentDislike(curElem._id)}
+                    </div>
+
+                    {/* Comment Text */}
+                    <p
+                      className={`mt-1 ${
+                        theme === "dark" ? "text-white" : "text-gray-900"
+                      }`}
                     >
-                      {dislikedComments.has(curElem._id) ? (
-                        <FaThumbsDown className="text-red-500" />
-                      ) : (
-                        <FaRegThumbsDown />
-                      )}
-                      <span className="text-sm">
-                        {commentDislikeCounts[curElem._id] || 0}
-                      </span>
+                      {translated || curElem.text}
+                    </p>
+
+                    {/* Translate Button */}
+                    <button
+                      onClick={() =>
+                        handleTranslateFunc(curElem._id, curElem.text)
+                      }
+                      className="text-sm text-blue-600 hover:underline mt-1 disabled:opacity-50"
+                      disabled={loadingTranslate === safeId}
+                    >
+                      {loadingTranslate === safeId
+                        ? "Translating..."
+                        : "Translate"}
                     </button>
+
+                    {/* Like / Dislike Buttons */}
+                    <div className="flex gap-4 mt-2">
+                      <button
+                        className="flex items-center gap-1 hover:scale-110 transition-transform"
+                        onClick={() => handleCommentLike(curElem._id)}
+                      >
+                        {likedComments.has(curElem._id) ? (
+                          <FaThumbsUp className="text-blue-500" />
+                        ) : (
+                          <FaRegThumbsUp />
+                        )}
+                        <span className="text-sm">
+                          {commentLikeCounts[curElem._id] || 0}
+                        </span>
+                      </button>
+
+                      <button
+                        className="flex items-center gap-1 hover:scale-110 transition-transform"
+                        onClick={() => handleCommentDislike(curElem._id)}
+                      >
+                        {dislikedComments.has(curElem._id) ? (
+                          <FaThumbsDown className="text-red-500" />
+                        ) : (
+                          <FaRegThumbsDown />
+                        )}
+                        <span className="text-sm">
+                          {commentDislikeCounts[curElem._id] || 0}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+{/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
         </div>
       )}
 
