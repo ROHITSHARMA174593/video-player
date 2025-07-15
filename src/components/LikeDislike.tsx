@@ -257,12 +257,26 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
     {}
   );
   const [loadingTranslate, setLoadingTranslate] = useState<string | null>(null);
+  const [showSeeOriginalo, setShowSeeOriginal] = useState<
+    Record<string, boolean>
+  >({});
 
   const handleTranslateFunc = async (
     commentId: string | number,
     text: string
   ): Promise<void> => {
     const safeID = String(commentId);
+
+    // If already translated, toggle between original and translation
+    if (translatedComment[safeID]) {
+      setShowSeeOriginal((prev) => ({
+        ...prev,
+        [safeID]: !prev[safeID],
+      }));
+      return;
+    }
+
+    // If not translated yet, translate it
     setLoadingTranslate(safeID);
     try {
       const res = await fetch("/api/translate", {
@@ -272,13 +286,22 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
         },
         body: JSON.stringify({ text }),
       });
+
       const data: { translatedText: string } = await res.json();
+
       setTranslatedComment((prev) => ({
         ...prev,
         [safeID]: data.translatedText,
       }));
+
+      setShowSeeOriginal((prev) => ({
+        ...prev,
+        [safeID]: false, // show translated by default
+      }));
+
+      console.log("Translation successful...");
     } catch (err) {
-      console.log("Translated Failed");
+      console.log("Translation failed");
     } finally {
       setLoadingTranslate(null);
     }
@@ -389,7 +412,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
               Submit
             </button>
           </div>
-{/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
+          {/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
           <div className="mt-4 space-y-4">
             {commentsData.map((curElem) => {
               const safeId = String(curElem._id);
@@ -423,7 +446,12 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
                         theme === "dark" ? "text-white" : "text-gray-900"
                       }`}
                     >
-                      {translated || curElem.text}
+                      {/* Convert Data in Translation and in Original */}
+                      <p>
+                        {translatedComment[safeId] && !showSeeOriginalo[safeId]
+                          ? translatedComment[safeId]
+                          : curElem.text}
+                      </p>
                     </p>
 
                     {/* Translate Button */}
@@ -436,6 +464,10 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
                     >
                       {loadingTranslate === safeId
                         ? "Translating..."
+                        : translatedComment[safeId]
+                        ? showSeeOriginalo[safeId]
+                          ? "See Translation"
+                          : "See Original"
                         : "Translate"}
                     </button>
 
@@ -474,7 +506,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
               );
             })}
           </div>
-{/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
+          {/*-------------------------------- Comment Data ----------------------- Comment Data ------------------------------------------------------------------------------*/}
         </div>
       )}
 

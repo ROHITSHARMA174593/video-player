@@ -10,7 +10,7 @@ export default async function handler(
   }
 
   const { text } = req.body;
-  console.log("📨 Incoming text:", text);
+  // console.log("📨 Incoming text:", text);
 
   if (!text || typeof text !== "string") {
     return res.status(400).json({ error: "Invalid text input" });
@@ -18,7 +18,7 @@ export default async function handler(
 
   try {
     const translated = await translate(text, { from: "hi", to: "en" });
-    console.log("✅ Translated:", translated);
+    // console.log("✅ Translated:", translated);
     return res.status(200).json({ translatedText: translated });
   } catch (error) {
     console.error("❌ Translation error:", error);
