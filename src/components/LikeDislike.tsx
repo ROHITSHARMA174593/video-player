@@ -307,6 +307,59 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
     }
   };
 
+  //! Delete Comment
+  const currentUserEmail = session?.user?.email || ""; // Adjust based on your setup
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const res = await fetch(`/api/comment/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const text = await res.text(); // ← get actual error HTML/text
+        console.error("Unexpected response:", text); // 👀 log what went wrong
+        throw new Error("Delete failed");
+      }
+
+      const data = await res.json(); // ✅ Only do this if response is OK
+      console.log("Delete successful:", data.message);
+
+      setCommentsData((prev) =>
+        prev.filter((c) => String(c._id) !== commentId)
+      );
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  //! Edit Comment
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editedText, setEditedText] = useState<string>("");
+  const handleEditComment = async (commentId: string) => {
+    try {
+      const res = await fetch(`/api/comment/${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newText: editedText }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to edit comment");
+      }
+
+      const updatedComment = await res.json();
+      setCommentsData((prev) =>
+        prev.map((c) => (String(c._id) === commentId ? updatedComment : c))
+      );
+
+      setEditingCommentId(null);
+      setEditedText("");
+    } catch (error) {
+      console.error("Edit failed:", error);
+    }
+  };
+
   return (
     <>
       <div
@@ -417,6 +470,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
             {commentsData.map((curElem) => {
               const safeId = String(curElem._id);
               const translated = translatedComment[safeId];
+              const isAuthor = curElem.email === currentUserEmail;
 
               return (
                 <div
@@ -430,6 +484,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
 
                   {/* Main Content */}
                   <div className="flex-1">
+                    {/* Top Row: Username + Triple Dots if Author */}
                     <div className="flex justify-between items-center">
                       <span
                         className={`font-semibold ${
@@ -438,21 +493,84 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
                       >
                         {curElem.email || "Anonymous"}
                       </span>
+
+                      {isAuthor && (
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setMenuOpen((prev) =>
+                                prev === safeId ? null : safeId
+                              )
+                            }
+                            className="text-gray-500 hover:text-black p-1 cursor-pointer"
+                          >
+                            ⋮
+                          </button>
+
+                          {menuOpen === safeId && (
+                            <div className="absolute right-0 mt-2 w-28 bg-white border shadow-md z-10">
+                              <button
+                                onClick={() => {
+                                  setEditingCommentId(safeId);
+                                  setEditedText(curElem.text);
+                                  setMenuOpen(null);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-blue-100 text-blue-600"
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  handleDeleteComment(safeId);
+                                  setMenuOpen(null);
+                                }}
+                                className="block w-full text-left px-4 py-2 hover:bg-red-800 text-red-600 hover:text-white"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Comment Text */}
-                    <p
-                      className={`mt-1 ${
-                        theme === "dark" ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      {/* Convert Data in Translation and in Original */}
-                      <p>
-                        {translatedComment[safeId] && !showSeeOriginalo[safeId]
-                          ? translatedComment[safeId]
+                    {editingCommentId === safeId ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          value={editedText}
+                          onChange={(e) => setEditedText(e.target.value)}
+                          className={`w-full text-sm p-1 border rounded ${
+                            theme === "dark"
+                              ? "bg-[#1a1a1a] text-white border-gray-600"
+                              : "bg-white text-black border-gray-300"
+                          }`}
+                        />
+                        <button
+                          onClick={() => handleEditComment(safeId)}
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="text-gray-500 hover:underline text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <p
+                        className={`mt-1 ${
+                          theme === "dark" ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        {translated && !showSeeOriginalo[safeId]
+                          ? translated
                           : curElem.text}
                       </p>
-                    </p>
+                    )}
 
                     {/* Translate Button */}
                     <button
@@ -464,7 +582,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
                     >
                       {loadingTranslate === safeId
                         ? "Translating..."
-                        : translatedComment[safeId]
+                        : translated
                         ? showSeeOriginalo[safeId]
                           ? "See Translation"
                           : "See Original"
