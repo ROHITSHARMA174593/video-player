@@ -49,6 +49,7 @@ const Index = ({theme} : HomeProps) => {
       genres: ["Comedy", "Drama"],
       rating: 7.8,
       image: "/Images/HomePageImg/img4.jpg",
+      source:"/videos/input4/master.m3u8"
     },
     { 
       videoId : "vidId005",
