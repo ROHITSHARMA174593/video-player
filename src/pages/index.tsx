@@ -171,7 +171,7 @@ return (
       </h1>
 
       {/* Horizontal Scrollable Section for Cards */}
-      <div className="mt-5 w-full overflow-x-auto hide-scrollbar">
+      <div className="mt-5 w-full overflow-x-auto hide-scrollbar ">
         <div className="flex gap-6 md:gap-6 sm:gap-2 w-max">
           {movies.map((movie, index) => (
             <div

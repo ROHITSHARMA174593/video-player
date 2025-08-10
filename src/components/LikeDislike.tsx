@@ -365,7 +365,7 @@ const LikeDislike = ({ videoId, theme }: LikeDislikeProps) => {
       <div
         className={` ${
           theme === "dark" ? "bg-black text-white" : "bg-gray-200 text-black"
-        } absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-6   bg-opacity-30 px-4 py-2 rounded-xl z-50`}
+        } md:absolute md:bottom-8 md:left-1/2 md:transform -translate-x-1/2 md:flex md:flex-row md:gap-6   bg-opacity-30 px-4 py-2 rounded-xl z-50 bottom-70 left-45 flex flex-col gap-3  `}
       >
         <button
           onClick={handleLike}

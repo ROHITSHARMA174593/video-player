@@ -151,7 +151,7 @@ const PublicLayout = ({ children, theme }: PublicLayoutProps) => {
 
   const Navbar = () => (
     <aside
-      className={`${theme === "dark" ? "bg-black text-white " : "bg-white text-black"} shadow-md fixed  sm:top-20 left-0 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] transition-all duration-300 p-3 sm:p-4 flex flex-col z-20 ${
+      className={`${theme === "dark" ? "bg-black text-white " : "bg-white text-black"} shadow-md fixed top-16 sm:top-20 left-0 h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] transition-all duration-300 p-3 sm:p-4 flex flex-col z-20 ${
         isSidebarOpen ? "w-48 sm:w-64" : "w-16 sm:w-20"
       }`}
     >
