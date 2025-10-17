@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { dbConnect } from "@/lib/dbConnect";
 import Like from "@/lib/Like";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req : NextApiRequest , res: NextApiResponse) {
   try {
     await dbConnect();
 
